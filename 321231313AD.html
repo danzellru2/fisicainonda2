@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calculadora Futurista</title>
+    <style>
+        .custom-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+          }
+          
+          .toggle-mode-checkbox {
+            display: none;
+          }
+          
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 34px;
+            transition: 0.4s;
+          }
+          
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: 0.4s;
+          }
+          .toggle-mode-checkbox:checked + .custom-toggle .slider {
+            background-color: #6e75fe; 
+          }
+          
+          .toggle-mode-checkbox:checked + .custom-toggle .slider:before {
+            transform: translateX(26px);
+          }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .option {
+            width: calc(50% - 20px);
+            max-width: 300px;
+            height: 100px;
+            background-color: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            text-align: center;
+            line-height: 100px;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+
+        .option:hover {
+            background-color: #3a3a3a;
+            transform: scale(1.05);
+        }
+
+        .calculator {
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            display: none;
+            background-color: #1a1a1a;
+            border: 2px solid #3a3a3a;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        .calculator h2 {
+            text-align: center;
+        }
+
+        .calculator label, .calculator input, .calculator button {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .steps {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .calculate-button {
+            background-color: #007ACC;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .calculate-button:hover {
+            background-color: #005faa;
+        }
+
+        .close-button {
+            background-color: #FF3443;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            float: right;
+        }
+
+        .close-button:hover {
+            background-color: #FF0000;
+        }
+
+        .toggle-mode-switch {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-mode-label {
+            color: #6e75fe;
+            margin-right: 10px;
+        }
+
+        .toggle-mode-checkbox {
+            transform: scale(1.5);
+            margin: 0;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+    background-image: url('negro.jpeg');
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: center center; 
+
+
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+        #prevButton, #nextButton {
+            background-color: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            color: #fff;
+            font-size: 20px;
+            padding: 5px 10px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #clearHistoryButton {
+    background-color: #009900;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#clearHistoryButton:hover {
+    background-color: #007700;
+}
+
+        .show-history-button {
+            background-color: #009900;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .show-history-button:hover {
+            background-color: #007700;
+        }
+        #history-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #1a1a1a;
+            border: 2px solid #3a3a3a;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            display: none;
+        }
+    
+        #history-box.show {
+            display: block;
+            animation: fade-in 0.5s;
+        }
+    
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 20%;
+    top: 20%;
+    width: 30%;
+    max-height: 30%;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    border: 2px solid #3a3a3a;
+    padding: 20px;
+    max-height: 100%;
+    overflow-y: auto;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    position: relative;
+}
+
+.close2 {
+    background-color: #009900;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px; 
+}
+
+.close2:hover {
+    background-color: #007700;
+}
+.toggle-mode-button {
+    background-color: #009900;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px; 
+}
+
+.toggle-mode-button:hover {
+    background-color: #007700;
+}.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.button-container button {
+    margin: 5px;
+}
+
+
+.close2 {
+    margin-left: 10px; 
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="option" id="option1" onclick="showCalculator('calculator1')">Escala de Richter</div>
+        <div class="option" id="option2" onclick="showCalculator('calculator2')">Velocidad</div>
+        <div class="option" id="option3" onclick="showCalculator('calculator3')">Amplitud</div>
+        <button id="prevButton" onclick="showNextOption(-1)">&#9664;</button>
+        <button id="nextButton" onclick="showNextOption(1)">&#9654;</button>
+    </div>
+
+    <div class="calculator" id="calculator1">
+        <button class="close-button" onclick="closeCalculator('calculator1')">X</button>
+        <h2>Escala de Richter</h2>
+        <label for="amplitud">Amplitud:</label>
+        <input type="number" id="amplitud" step="0.01">
+        <label for="amplitud_absoluta">Amplitud Absoluta:</label>
+        <input type="number" id="amplitud_absoluta" step="0.01">
+        <button class="calculate-button" onclick="calcularRichter()">Calcular</button>
+        <div class="steps" id="steps"></div>
+    </div>
+
+    <div class="calculator" id="calculator2">
+        <button class="close-button" onclick="closeCalculator('calculator2')">X</button>
+        <h2>Velocidad</h2>
+        <label for="distancia">Distancia (m):</label>
+        <input type="number" id="distancia" step="0.01">
+        <label for="tiempo">Tiempo (s):</label>
+        <input type="number" id="tiempo" step="0.01">
+        <button class="calculate-button" onclick="calcularVelocidad()">Calcular</button>
+        <div class="steps" id="steps2"></div>
+    </div>
+    <div class="calculator" id="calculator3">
+        <button class="close-button" onclick="closeCalculator('calculator3')">X</button>
+        <h2>Amplitud</h2>
+        <label for="Escala">Escala ritcher</label>
+        <input type="number" id="Escala" step="0.01">
+        <label for="amplitudRIT">Amplitud:</label>
+        <input type="number" id="amplitudRIT" step="0.01">
+        <label for="amplitud_absoluta2">Amplitud Absoluta:</label>
+        <input type="number" id="amplitud_absoluta2" step="0.01">
+        <button class="calculate-button" onclick="amplitud123()">Calcular</button>
+        <div class="steps" id="steps3"></div>
+    </div>
+
+    <div class="button-container">
+        <button id="clearHistoryButton" onclick="clearHistory()">Borrar Historial</button>
+        <button class="show-history-button" onclick="showHistory()">Mostrar Historial</button>
+        <button class="toggle-mode-button" id="toggleModeButton" onclick="toggleDarkMode()">Cambiar Modo</button>
+        <button class="close2" onclick="closeModal()">Cerrar</button>
+    </div>
+    
+
+
+    <div id="history-box" class="modal">
+        <div class="modal-content">
+            <h2>Historial de Operaciones:</h2>
+            <!-- Aquí se mostrará el historial -->
+        </div>
+    </div>
+   
+    
+   
+
+
+
+
+
+    <script>
+        let currentOptionIndex = 1;
+        const historyData = [];
+    
+        function showNextOption(delta) {
+            currentOptionIndex += delta;
+    
+            if (currentOptionIndex < 1) {
+                currentOptionIndex = 1;
+            } else if (currentOptionIndex > 3) {
+                currentOptionIndex = 3;
+            }
+    
+            hideAllOptions();
+            showOption("option" + currentOptionIndex);
+        }
+    
+        function showOption(optionId) {
+            document.getElementById(optionId).style.display = "block";
+        }
+    
+        function hideAllOptions() {
+            const options = document.querySelectorAll(".option");
+            options.forEach(option => {
+                option.style.display = "none";
+            });
+        }
+    
+        function showCalculator(calculatorId) {
+            hideAllCalculators();
+            document.getElementById(calculatorId).style.display = "block";
+        }
+    
+        function hideAllCalculators() {
+            const calculators = document.querySelectorAll(".calculator");
+            calculators.forEach(calculator => {
+                calculator.style.display = "none";
+            });
+        }
+    
+        function closeCalculator(calculatorId) {
+            document.getElementById(calculatorId).style.display = "none";
+        }
+    
+        function calcularRichter() {
+            const amplitud = parseFloat(document.getElementById("amplitud").value);
+            const amplitudAbsoluta = parseFloat(document.getElementById("amplitud_absoluta").value);
+            const stepsElement = document.getElementById("steps");
+            
+            if (amplitud && amplitudAbsoluta !== 0) {
+                const resultado = Math.log10(amplitud.toFixed(2) / amplitudAbsoluta.toFixed(2)).toFixed(2);
+    
+                const steps = `PASO 1:<br> R = LOG (${amplitud.toFixed(2)} / ${amplitudAbsoluta.toFixed(2)})<br><br>`
+                    + `PASO 2:<br> R = LOG (${amplitud.toFixed(2) / amplitudAbsoluta.toFixed(2)})<br><br>`
+                    + `PASO 3:<br> R = ${resultado}<br>`;
+                
+                addToHistory("Cálculo de Richter", steps);
+                stepsElement.innerHTML = steps;
+            } else if (amplitudAbsoluta == 0 || amplitud == 0) {
+                if (amplitud == 0) {
+                    const resultado = Math.log10(amplitudAbsoluta.toFixed(2)).toFixed(2);
+                    const steps = `PASO 1:<br> R = LOG (${amplitudAbsoluta.toFixed(2)})<br><br>`
+                        + `PASO 2:<br> R = ${resultado.toFixed(2)}<br><br>`;
+                    addToHistory("Cálculo de Richter", steps);
+                    stepsElement.innerHTML = steps;
+                } else if (amplitudAbsoluta == 0) {
+                    const resultado = Math.log10(amplitud.toFixed(2)).toFixed(2);
+                    const steps = `PASO 1:<br> R = LOG (${amplitud.toFixed(2)})<br><br>`
+                        + `PASO 2:<br> R = ${resultado}<br><br>`;
+                    addToHistory("Cálculo de Richter", steps);
+                    stepsElement.innerHTML = steps;
+                }
+            } else {
+                stepsElement.innerHTML = "Ingresa valores válidos.";
+            }
+        }
+        function amplitud123() {
+    const ritcher2 = parseFloat(document.getElementById("Escala").value);
+    const amplitud2 = parseFloat(document.getElementById("amplitudRIT").value);
+    const amplitudabs = parseFloat(document.getElementById("amplitud_absoluta2").value);
+    const amplitudCalculada = Math.pow(10, ritcher2).toFixed(2);
+    const stepsElement = document.getElementById("steps3");
+
+    if (ritcher2 !=0 && amplitud2 == 0 && amplitudabs == 0) {
+
+        const steps = `PASO 1:<br><br> 10^${ritcher2.toFixed(2)} = Amplitud / Amplitud Absoluta<br><br>` +
+        `PASO 2:<br><br> ${amplitudCalculada} =  Amplitud / Amplitud Absoluta<br><br>` +
+            `PASO 3:<br><br> ${amplitudCalculada}(Amplitud Absoluta) = Amplitud<br><br>`;
+        addToHistory("Cálculo de Amplitud", steps);
+        stepsElement.innerHTML = steps;
+    }  
+    if((ritcher2!=0) && (amplitud2!=0) && amplitudabs==0){
+        const steps = `PASO 1:<br><br> Antilog (${ritcher2.toFixed(2)}) = ${amplitud2} / Amplitud ABS<br><br>` +
+            `PASO 2:<br><br> ${amplitudCalculada} = ${amplitud2} / Amplitud ABS<br><br>` +
+            `PASO 3:<br><br> ${amplitudCalculada} (Amplitud ABS) = c${amplitud2} <br><br>`;
+        addToHistory("Cálculo de Amplitud", steps);
+        stepsElement.innerHTML = steps;
+    }
+    if((ritcher2!=0) && (amplitudabs!=0) && amplitud2==0){
+        const steps = `PASO 1:<br><br> Antilog (${ritcher2.toFixed(2)}) = Amplitud / ${amplitudabs}<br><br>` +
+            `PASO 2:<br><br> ${amplitudCalculada} = Amplitud / ${amplitudabs}<br><br>` +
+            `PASO 3:<br><br> ${amplitudCalculada} (${amplitudabs}) = Amplitud <br><br>`;
+        addToHistory("Cálculo de Amplitud", steps);
+        stepsElement.innerHTML = steps;
+    }
+    if((ritcher2!=0) && (amplitudabs!=0) && (amplitud2!=0)){
+        const steps = `PASO 1:<br><br> Antilog (${ritcher2.toFixed(2)}) = ${amplitud2}  / ${amplitudabs}<br><br>` +
+            `PASO 2:<br><br> ${amplitudCalculada} = ${amplitud2} / ${amplitudabs}<br><br>` +
+            `PASO 3:<br><br> ${amplitudCalculada} (${amplitudabs}) = ${amplitud2}  <br><br>`;
+        addToHistory("Cálculo de Amplitud", steps);
+        stepsElement.innerHTML = steps;
+
+    }
+
+}
+
+
+        function calcularVelocidad() {
+            const distancia = parseFloat(document.getElementById("distancia").value);
+            const tiempo = parseFloat(document.getElementById("tiempo").value);
+            const stepsElement = document.getElementById("steps2");
+    
+            if (distancia > 0 && tiempo > 0) {
+                const velocidad = (distancia / tiempo).toFixed(2);
+                const steps = `PASO 1:<br><br> V = ${distancia.toFixed(2)} / ${tiempo.toFixed(2)}<br><br>`
+                    + `PASO 2:<br><br> V = ${velocidad} m/s`;
+                addToHistory("Cálculo de Velocidad", steps);
+                stepsElement.innerHTML = steps;
+            } else {
+                stepsElement.innerHTML = "Ingresa valores válidos (distancia y tiempo deben ser mayores que 0).";
+            }
+        }
+    
+        function toggleDarkMode() {
+    const body = document.body;
+    const toggleModeButton = document.getElementById("toggleModeButton");
+
+    if (body.classList.contains("dark-mode")) {
+        body.classList.remove("dark-mode");
+    } else {
+        body.classList.add("dark-mode");
+    }
+}
+
+
+    
+        function addToHistory(operation, steps) {
+            historyData.push({ operation, steps });
+        }
+    
+        function showHistory() {
+    const historyElement = document.getElementById("history-box");
+
+    if (historyData.length > 0) {
+        historyElement.innerHTML = "<h2>Historial de Operaciones:</h2>";
+        historyData.forEach((entry, index) => {
+            const entryHtml = `<p><strong>Operación ${index + 1}:</strong> ${entry.operation}</p>`;
+            const stepsHtml = `<p><strong>Pasos:</strong><br>${entry.steps}</p>`;
+            historyElement.innerHTML += entryHtml + stepsHtml;
+        });
+
+        historyElement.style.display = "block";
+    } else {
+        historyElement.innerHTML = "<p>No hay operaciones en el historial.</p>";
+    }
+}
+
+function closeModal() {
+            const modal = document.getElementById("history-box");
+            modal.style.display = "none";
+        }
+
+
+    </script>
+    
+</body>
+</html>
