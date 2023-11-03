@@ -313,7 +313,7 @@ body {
 
     </style>
 </head>
-<body>
+<body onload="showOption('option1')">
     <div class="container">
         <div class="option" id="option1" onclick="showCalculator('calculator1')">Escala de Richter</div>
         <div class="option" id="option2" onclick="showCalculator('calculator2')">Velocidad</div>
@@ -322,7 +322,7 @@ body {
         <button id="nextButton" onclick="showNextOption(1)">&#9654;</button>
     </div>
 
-    <div class="calculator" id="calculator1">
+    <div class="calculator" id="calculator1" style="display: none;">
         <button class="close-button" onclick="closeCalculator('calculator1')">X</button>
         <h2>Escala de Richter</h2>
         <label for="amplitud">Amplitud:</label>
@@ -333,7 +333,7 @@ body {
         <div class="steps" id="steps"></div>
     </div>
 
-    <div class="calculator" id="calculator2">
+     <div class="calculator" id="calculator2" style="display: none;">
         <button class="close-button" onclick="closeCalculator('calculator2')">X</button>
         <h2>Velocidad</h2>
         <label for="distancia">Distancia (m):</label>
@@ -343,7 +343,7 @@ body {
         <button class="calculate-button" onclick="calcularVelocidad()">Calcular</button>
         <div class="steps" id="steps2"></div>
     </div>
-    <div class="calculator" id="calculator3">
+    <div class="calculator" id="calculator3" style="display: none;">
         <button class="close-button" onclick="closeCalculator('calculator3')">X</button>
         <h2>Amplitud</h2>
         <label for="Escala">Escala ritcher</label>
@@ -371,7 +371,7 @@ body {
             <!-- Aquí se mostrará el historial -->
         </div>
     </div>
-   
+   <div id="visitor-count">Visitantes: 0</div>
     
    
 
@@ -557,6 +557,15 @@ function closeModal() {
         
             showHistory();
         }
+        
+        let visitorCount = localStorage.getItem('visitorCount');
+        if (visitorCount) {
+        visitorCount = parseInt(visitorCount) + 1;
+        } else {
+        visitorCount = 1;
+        }
+        localStorage.setItem('visitorCount', visitorCount);
+        document.getElementById('visitor-count').textContent = `Visitantes: ${visitorCount}`;
 
     </script>
     
